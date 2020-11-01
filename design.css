@@ -16,6 +16,10 @@ html , body {
     bottom: 0;
     left: 0;
     margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #container .title {
@@ -29,8 +33,7 @@ html , body {
 }
 
 #startBtn {
-    display: block;
-    margin: auto;
+    margin: 0 auto 15px auto;
     width: 90%;
     height: 30px;
     border-radius: 15px; 
@@ -45,7 +48,19 @@ html , body {
 }
 
 #startBtn:hover {
-    background-color: lightgreen;
+    letter-spacing: 6px;
 }
 
+.inputContainer {
+    display: flex;
+    justify-content: space-evenly;
+}
 
+#container input {
+    border: solid lime 2px;
+    width: 60px;
+    text-align: center;
+    outline: none;
+
+    font-size: 24px;
+}
