@@ -79,7 +79,14 @@ html , body {
     margin: auto;
 }
 
+
+
 .tile {
     text-align: center;
-    border: solid black 1px;
+    box-shadow: 0 0 7px black;
+    transition: .3s;
+    color: white;
+    user-select: none;
+
 }
+

@@ -8,6 +8,7 @@ function Tile(number) {
     this.domref = document.createElement("div");
     this.domref.classList.toggle("tile");
     this.domref.innerText = number;
+    this.selected = false;
 }
 
 // returns a flex input div.
@@ -34,8 +35,8 @@ function startClick() {
     let rows = document.querySelector(`input[name="rows"]`).value;
     let cols = document.querySelector(`input[name="cols"]`).value;
     
-    if(cols > 20 || cols < 3 || rows > 20 || rows < 3 || rows*cols % 2 != 0)
-        alert(`rows and cols has to be between 3 and 20 and cols*rows has to be even.`);
+    if(cols > 10 || cols < 3 || rows > 10 || rows < 3 || rows*cols % 2 != 0)
+        alert(`rows and cols has to be between 3 and 10 and cols*rows has to be even.`);
     else {
         clearBody();
         startGame(rows,cols);
@@ -56,7 +57,7 @@ function menu() {
     container.setAttribute("id","container");
 
         let title = document.createElement("h1");
-        title.innerText = "select dimensions (3-20)";
+        title.innerText = "select dimensions (3-10)";
         title.classList.toggle("title");
         container.appendChild(title);
 
@@ -75,10 +76,39 @@ function menu() {
 }
 
 
+// adds responsive design to the tiles.
+function addTileDesign(tile) {
+    tile.domref.style.lineHeight = tile.domref.offsetHeight + "px";
+    tile.domref.style.fontSize = tile.domref.offsetHeight/2 + "px";
+    tile.domref.addEventListener("click",()=>{
+        
+        let css = tile.domref.style;
+        let hight = tile.domref.offsetHeight;
+
+        if(tile.selected == false) {
+            css.color = "black";
+            css.boxShadow = `0 0 7px black,
+                             inset 0 0 0px ${hight/100*3}px white,
+                             inset 0 0 0px ${hight/100*6}px lime`;
+
+            tile.selected = true;
+
+        } else {
+            css.color = "white";
+            css.boxShadow = `0 0 7px black`;
+
+            tile.selected = false;
+        }
+        
+    });
+
+}
+
+
 
 function startGame(rows,cols) {
 
-    //inits a matrix with tiles
+    //inits a matrix with tiles.
     function initMatrix(x,y) {
 
         let tiles = x * y / 2;
@@ -92,6 +122,18 @@ function startGame(rows,cols) {
         return matrix;
     }
 
+    // shuffles the board array.
+    function arrayShuffle(array) {
+    
+        for(let i = 0; i < array.length; i++) {
+            let rnd = Math.floor( Math.random() * array.length );
+            let temp = array[i];
+    
+            array[i] = array[rnd];
+            array[rnd] = temp;
+        }
+    
+    }
 
     let Game = {
         "rows": rows,
@@ -100,24 +142,20 @@ function startGame(rows,cols) {
         "matrix": initMatrix(rows,cols),
     }   
 
+    arrayShuffle( Game["matrix"] );
     Game["grid"].setAttribute("id","mainGrid");
     Game["grid"].style.gridTemplateColumns = `repeat(${Game["cols"]}, 1fr)`;
     Game["grid"].style.gridTemplateRows = `repeat(${Game["rows"]}, 1fr)`;
+    body.appendChild( Game["grid"] );
+
 
     Game["matrix"].forEach(tile => {
         Game["grid"].appendChild(tile.domref);
+        addTileDesign(tile);
     });
-
-
-
-    body.appendChild(Game.grid);
-    console.log(Game.grid);
 }
 
 
-
-
-// tile.domref.style.lineHeight = tile.domref.offsetHeight;
 
 
 
