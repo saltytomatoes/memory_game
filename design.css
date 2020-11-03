@@ -90,3 +90,25 @@ html , body {
 
 }
 
+#winningMsg {
+    text-align: center;
+    margin-top: 45vh;
+
+    font-family: ubuntu, arial, serif;
+    animation: winAnimation infinite;
+    animation-duration: 1s;
+}
+
+@keyframes winAnimation {
+    0% {
+        letter-spacing: 0px;
+    }
+
+    50%{
+        letter-spacing: 4px;
+    }
+
+    100% {
+        letter-spacing: 0px;
+    }
+}

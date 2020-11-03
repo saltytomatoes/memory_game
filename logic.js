@@ -9,6 +9,7 @@ function Tile(number) {
     this.domref.classList.toggle("tile");
     this.domref.innerText = number;
     this.selected = false;
+    this.paired = false;
 }
 
 // returns a flex input div.
@@ -76,37 +77,15 @@ function menu() {
 }
 
 
-// adds responsive design to the tiles.
-function addTileDesign(tile) {
-    tile.domref.style.lineHeight = tile.domref.offsetHeight + "px";
-    tile.domref.style.fontSize = tile.domref.offsetHeight/2 + "px";
-    tile.domref.addEventListener("click",()=>{
-        
-        let css = tile.domref.style;
-        let hight = tile.domref.offsetHeight;
-
-        if(tile.selected == false) {
-            css.color = "black";
-            css.boxShadow = `0 0 7px black,
-                             inset 0 0 0px ${hight/100*3}px white,
-                             inset 0 0 0px ${hight/100*6}px lime`;
-
-            tile.selected = true;
-
-        } else {
-            css.color = "white";
-            css.boxShadow = `0 0 7px black`;
-
-            tile.selected = false;
-        }
-        
-    });
-
-}
-
-
 
 function startGame(rows,cols) {
+
+
+    // adds responsive size to the tiles.
+    function textSizeConfig(tile) {
+        tile.domref.style.lineHeight = tile.domref.offsetHeight + "px";
+        tile.domref.style.fontSize = tile.domref.offsetHeight/2 + "px";
+    }
 
     //inits a matrix with tiles.
     function initMatrix(x,y) {
@@ -135,11 +114,97 @@ function startGame(rows,cols) {
     
     }
 
+
+    // Activates when a tile is clicked.
+    function selectedTile(Game, tile) {
+
+        function toggleBoxShadow(tile) {
+            let css = tile.domref.style;
+            let hight = tile.domref.offsetHeight;
+    
+            if(tile.selected == false) {
+                css.color = "black";
+                css.boxShadow = `0 0 7px black,
+                                 inset 0 0 0px ${hight/100*3}px white,
+                                 inset 0 0 0px ${hight/100*6}px lime`;
+    
+                tile.selected = true;
+    
+            } else {
+                css.color = "white";
+                css.boxShadow = `0 0 7px black`;
+    
+                tile.selected = false;
+            }
+    
+        }
+
+        function toggleCardPaired(tile) {
+            let css = tile.domref.style;
+
+            css.background = "lime";
+            css.color = "white";
+            css.boxShadow = "";
+        }
+        
+        function EndGame() {
+            clearBody();
+
+            let winningMsg = document.createElement("h1");
+            winningMsg.setAttribute("id","winningMsg");
+            winningMsg.innerText = "you won! congrats.";
+            body.appendChild(winningMsg);
+
+        }
+
+        function checkIfGameOver(Game) {
+            for(let i = 0; i < Game["matrix"].length; i++) {
+                if( Game["matrix"][i].paired == false ) return;
+            }
+
+            setTimeout(EndGame,1000);
+        }
+
+        if(tile.paired == true) return;
+
+        if(tile.selected == true) {
+            Game["selected"].splice( Game["selected"].indexOf(tile) ,1);
+            toggleBoxShadow(tile);
+            return;
+        }
+        
+        if(tile.selected == false && Game["selected"].length < 2) {
+            Game["selected"].push(tile);
+            toggleBoxShadow(tile);
+        }
+
+        if(Game["selected"].length == 2) {
+            if(Game["selected"][0].domref.innerText == Game["selected"][1].domref.innerText) {
+                
+
+                //The user successfully found a pair of cards
+                Game["selected"].forEach(tile => {
+                    toggleCardPaired(tile);
+                    tile.paired = true;
+                    tile.selected = false;
+                });
+                Game["selected"] = [];
+                checkIfGameOver(Game);
+            }
+        }
+        
+    }
+
+
+
+
+
     let Game = {
         "rows": rows,
         "cols": cols,
         "grid": document.createElement("div"),
         "matrix": initMatrix(rows,cols),
+        "selected": []
     }   
 
     arrayShuffle( Game["matrix"] );
@@ -151,13 +216,22 @@ function startGame(rows,cols) {
 
     Game["matrix"].forEach(tile => {
         Game["grid"].appendChild(tile.domref);
-        addTileDesign(tile);
+        textSizeConfig(tile);
+        tile.domref.addEventListener("click",()=> {
+            selectedTile(Game,tile);
+        });
     });
 }
 
 
 
+/* 
 
+selected tile: triggers when a tile is selected
+
+splice( where index , how many , what to insert instead );
+
+*/
 
 
 
